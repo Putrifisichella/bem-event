@@ -94,13 +94,6 @@ $conn->close();
                                 </span>
                                 dari <?= $event['quota'] ?>
                             </div>
-                            <div class="col-12">
-                                <i class="fas fa-calendar-check me-1 text-primary"></i>
-                                <strong>Pendaftaran:</strong>
-                                <?= date('d M Y', strtotime($event['registration_open'])) ?>
-                                &ndash;
-                                <?= date('d M Y', strtotime($event['registration_close'])) ?>
-                            </div>
                         </div>
                     </div>
 

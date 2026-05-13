@@ -1,37 +1,17 @@
-</main>
-
-<footer class="mt-auto py-4">
-  <style>
-    .footer-text {
-        font-size: 0.75rem;
-        white-space: normal;
-    }
-
-    @media (max-width: 576px) {
-        .footer-text {
-            font-size: 0.65rem;
-        }
-    }
-  </style>
-
-  <div class="container">
-    <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between gap-2">
-      
-      <!-- Logo + Brand -->
-      <div class="d-flex align-items-center gap-2">
-        <img src="<?php echo BASE_URL; ?>assets/img/logo-bem.png"
-             alt="Logo BEM"
-             style="height:22px;border-radius:4px;opacity:.7;">
-        <span class="footer-brand">BEM Fasilkom Unsika</span>
-      </div>
-
-      <!-- Copyright -->
-      <p class="mb-0 footer-text">
-        &copy; <?php echo date('Y'); ?> BEM Fasilkom Unsika &mdash; Sistem Pendaftaran Event
-      </p>
-
+</main> 
+<footer class="site-footer fixed-bottom" style="background:#1a2e42; border-top:1px solid rgba(255,255,255,0.1);" >
+    <div class="container">
+        <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between gap-2 py-2">
+            <div class="d-flex align-items-center gap-2">
+                <img src="<?= BASE_URL ?>assets/img/logo-bem.png"
+                     alt="Logo BEM" style="height:22px;border-radius:4px;opacity:.9;">
+                <span class="fw-bold text-white small">BEM Fasilkom Unsika</span>
+            </div>
+            <p class="mb-0 text-white-50 small" style="font-size:0.75rem;">
+                &copy; <?= date('Y') ?> BEM Fasilkom Unsika &mdash; Sistem Pendaftaran Event
+            </p>
+        </div>
     </div>
-  </div>
 </footer>
 
 <!-- Bootstrap JS -->
@@ -44,6 +24,6 @@
 <!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <!-- Custom JS -->
-<script src="<?php echo BASE_URL; ?>assets/js/script.js"></script>
+<script src="<?= BASE_URL ?>assets/js/script.js"></script>
 </body>
 </html>

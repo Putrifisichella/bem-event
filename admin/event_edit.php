@@ -1,8 +1,6 @@
 <?php
-/* ════════════════════════════════════════════════════════════════
-   admin/event_edit.php — Form Edit Event
-   ════════════════════════════════════════════════════════════════ */
-
+// admin/event_edit.php — Form Edit Event
+   
 include 'includes/auth.php';
 require_once '../config/database.php';
 
@@ -185,17 +183,6 @@ include '../includes/header.php';
                                        id="registration_close" name="registration_close"
                                        value="<?= htmlspecialchars($event['registration_close']) ?>" required>
                             </div>
-                        </div>
-
-                        <!-- Status Aktif -->
-                        <div class="form-check mb-4">
-                            <input class="form-check-input" type="checkbox"
-                                   id="is_active" name="is_active" value="1"
-                                   <?= $event['is_active'] ? 'checked' : '' ?>>
-                            <label class="form-check-label" for="is_active">
-                                <i class="fas fa-check-circle text-success me-1"></i>
-                                Aktifkan event (dapat didaftarkan oleh peserta)
-                            </label>
                         </div>
 
                         <div class="d-flex gap-3 justify-content-end">

@@ -1,5 +1,12 @@
 {
+    "name": "bem-fasilkom/event-registration",
+    "description": "Sistem Pendaftaran Online Kegiatan BEM Fasilkom Unsika",
+    "type": "project",
     "require": {
+        "php": ">=8.0",
         "phpmailer/phpmailer": "^7.0"
+    },
+    "config": {
+        "optimize-autoloader": true
     }
 }

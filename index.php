@@ -65,7 +65,7 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 /* ── Konstanta untuk read more ── */
-define('DESC_LIMIT', 130);
+define('DESC_LIMIT', 50);
 ?>
 
 <div class="container">
@@ -154,9 +154,12 @@ define('DESC_LIMIT', 130);
                     </span>
 
                     <div class="card-body d-flex flex-column">
+
+                        <!-- Judul Event -->
                         <h5 class="card-title"><?= htmlspecialchars($event['name']) ?></h5>
 
-                        <!-- ────── READ MORE DESCRIPTION ────── -->
+                        <!-- ── DESKRIPSI (Selengkapnya hanya untuk ini) ── -->
+                        <?php if (!empty($desc)): ?>
                         <div class="event-desc-wrap mb-2">
                             <p class="event-desc-text mb-1"
                                data-full="<?= htmlspecialchars($desc) ?>"
@@ -169,9 +172,13 @@ define('DESC_LIMIT', 130);
                                 </button>
                             <?php endif; ?>
                         </div>
-                        <!-- ─────────────────────────────────── -->
+                        <?php endif; ?>
 
-                        <ul class="list-unstyled small text-muted mt-auto mb-3">
+                        <!-- ── SPACER: mendorong metadata ke bawah ── -->
+                        <div class="flex-grow-1"></div>
+
+                        <!-- ── SELALU TAMPIL: Tanggal & Countdown ── -->
+                        <ul class="list-unstyled small text-muted mb-3">
                             <li>
                                 <i class="fas fa-calendar me-1 text-primary"></i>
                                 <?= date('d M Y', strtotime($event['registration_open'])) ?> &ndash;
@@ -185,7 +192,7 @@ define('DESC_LIMIT', 130);
                             </li>
                         </ul>
 
-                        <!-- Progress Bar Kuota -->
+                        <!-- ── SELALU TAMPIL: Progress Bar Kuota ── -->
                         <div class="mb-3">
                             <div class="d-flex justify-content-between small mb-1">
                                 <span><?= $registered ?> / <?= $event['quota'] ?> peserta</span>
@@ -202,7 +209,7 @@ define('DESC_LIMIT', 130);
                             </div>
                         </div>
 
-                        <!-- Tombol Daftar -->
+                        <!-- ── SELALU TAMPIL: Tombol Daftar ── -->
                         <?php if ($isFull): ?>
                             <button class="btn btn-secondary w-100" disabled>
                                 <i class="fas fa-times-circle me-1"></i> Kuota Penuh
@@ -213,8 +220,9 @@ define('DESC_LIMIT', 130);
                                 <i class="fas fa-edit me-1"></i> Daftar Sekarang
                             </a>
                         <?php endif; ?>
-                    </div>
-                </div>
+
+                    </div><!-- /card-body -->
+                </div><!-- /card -->
             </div>
             <?php endwhile; ?>
 

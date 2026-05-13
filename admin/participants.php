@@ -1,143 +1,180 @@
 <?php
+// admin/participants.php — Daftar Peserta per Event
+   
 include 'includes/auth.php';
 require_once '../config/database.php';
 
-$event_id = isset($_GET['event_id']) ? intval($_GET['event_id']) : 0;
-if ($event_id == 0) {
+$event_id = intval($_GET['event_id'] ?? 0);
+if ($event_id <= 0) {
     header('Location: events.php');
     exit;
 }
 
-// Ambil data event
-$sql_event = "SELECT * FROM events WHERE id = ?";
-$stmt_event = $conn->prepare($sql_event);
-$stmt_event->bind_param("i", $event_id);
-$stmt_event->execute();
-$event_result = $stmt_event->get_result();
+/* ── Ambil data event ── */
+$stmtEv = $conn->prepare('SELECT * FROM events WHERE id = ?');
+$stmtEv->bind_param('i', $event_id);
+$stmtEv->execute();
+$eventResult = $stmtEv->get_result();
 
-if ($event_result->num_rows == 0) {
-    $_SESSION['error'] = "Event tidak ditemukan.";
+if ($eventResult->num_rows === 0) {
+    $_SESSION['error'] = 'Event tidak ditemukan.';
     header('Location: events.php');
     exit;
 }
-$event = $event_result->fetch_assoc();
+$event = $eventResult->fetch_assoc();
+$stmtEv->close();
 
-// Ambil daftar peserta
-$sql_participants = "SELECT * FROM registrations WHERE event_id = ? ORDER BY registered_at DESC";
-$stmt_participants = $conn->prepare($sql_participants);
-$stmt_participants->bind_param("i", $event_id);
-$stmt_participants->execute();
-$participants = $stmt_participants->get_result();
+/* ── Ambil daftar peserta ── */
+$stmtP = $conn->prepare(
+    'SELECT * FROM registrations WHERE event_id = ? ORDER BY registered_at ASC'
+);
+$stmtP->bind_param('i', $event_id);
+$stmtP->execute();
+$participants = $stmtP->get_result();
+$totalPeserta = $participants->num_rows;
 
-$page_title = 'Peserta: ' . $event['name'];
+$page_title = 'Peserta: ' . htmlspecialchars($event['name']);
 include '../includes/header.php';
 ?>
 
 <div class="container fade-in">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold text-primary"><i class="fas fa-users me-2"></i>Peserta Event</h2>
+
+    <!-- ── Header & Navigasi ─────────────────────────────────── -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div>
-            <a href="events.php" class="btn btn-outline-secondary me-2">
-                <i class="fas fa-arrow-left me-2"></i>Kembali
+            <h2 class="fw-bold text-primary mb-1">
+                <i class="fas fa-users me-2"></i>Data Peserta
+            </h2>
+            <p class="text-muted mb-0 small">
+                Event: <strong><?= htmlspecialchars($event['name']) ?></strong>
+            </p>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+            <a href="events.php" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-arrow-left me-1"></i>Kembali
             </a>
-            <a href="export_excel.php?event_id=<?php echo $event_id; ?>" class="btn btn-success">
-                <i class="fas fa-file-csv me-2"></i>Export CSV
+            <a href="export_csv.php?event_id=<?= $event_id ?>" class="btn btn-success btn-sm">
+                <i class="fas fa-file-csv me-1"></i>Export CSV
             </a>
         </div>
     </div>
 
-    <!-- Info Event -->
+    <!-- ── Info Event ────────────────────────────────────────── -->
     <div class="card mb-4">
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0"><?php echo htmlspecialchars($event['name']); ?></h5>
+        <div class="card-header" style="background:linear-gradient(135deg,#1a2e42,#2563eb);color:#fff;">
+            <h6 class="mb-0 fw-bold">
+                <i class="fas fa-info-circle me-2"></i>Informasi Event
+            </h6>
         </div>
         <div class="card-body">
-            <div class="row">
-                <div class="col-sm-6">
-                    <p><strong>Kategori:</strong> <?php echo htmlspecialchars($event['category'] ?? '-'); ?></p>
-                    <p><strong>Tipe:</strong> <?php echo ucfirst($event['event_type']); ?></p>
+            <div class="row g-3">
+                <div class="col-sm-6 col-md-3">
+                    <small class="text-muted d-block">Kategori</small>
+                    <strong><?= htmlspecialchars($event['category'] ?? '-') ?></strong>
                 </div>
-                <div class="col-sm-6">
-                    <p><strong>Kuota:</strong> <?php echo $event['quota']; ?></p>
-                    <p><strong>Pendaftar:</strong> <?php echo $participants->num_rows; ?></p>
+                <div class="col-sm-6 col-md-3">
+                    <small class="text-muted d-block">Tipe</small>
+                    <span class="badge <?= $event['event_type'] === 'umum' ? 'bg-info text-dark' : 'bg-secondary' ?>">
+                        <?= ucfirst($event['event_type']) ?>
+                    </span>
+                </div>
+                <div class="col-sm-6 col-md-3">
+                    <small class="text-muted d-block">Kuota</small>
+                    <strong><?= $event['quota'] ?> peserta</strong>
+                </div>
+                <div class="col-sm-6 col-md-3">
+                    <small class="text-muted d-block">Terdaftar</small>
+                    <strong class="<?= $totalPeserta >= $event['quota'] ? 'text-danger' : 'text-success' ?>">
+                        <?= $totalPeserta ?> peserta
+                    </strong>
+                </div>
+                <div class="col-12">
+                    <!-- Progress bar kuota -->
+                    <?php $pct = $event['quota'] > 0 ? min(100, round($totalPeserta / $event['quota'] * 100)) : 0; ?>
+                    <small class="text-muted">Terisi <?= $pct ?>%</small>
+                    <div class="progress mt-1" style="height:8px;border-radius:9999px;">
+                        <div class="progress-bar <?= $pct >= 90 ? 'bg-danger' : ($pct >= 70 ? 'bg-warning' : 'bg-success') ?>"
+                             style="width:<?= $pct ?>%;border-radius:9999px;"></div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Notifikasi -->
-    <?php if (isset($_SESSION['success'])): ?>
+    <!-- ── Flash Messages ───────────────────────────────────── -->
+    <?php if (!empty($_SESSION['success'])): ?>
         <div class="alert alert-success alert-dismissible fade show">
             <i class="fas fa-check-circle me-2"></i>
-            <?php echo $_SESSION['success']; unset($_SESSION['success']); ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    <?php endif; ?>
-    <?php if (isset($_SESSION['error'])): ?>
-        <div class="alert alert-danger alert-dismissible fade show">
-            <i class="fas fa-exclamation-circle me-2"></i>
-            <?php echo $_SESSION['error']; unset($_SESSION['error']); ?>
+            <?= htmlspecialchars($_SESSION['success']); unset($_SESSION['success']); ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     <?php endif; ?>
 
-    <!-- Tabel Peserta -->
+    <!-- ── Tabel Peserta ─────────────────────────────────────── -->
     <div class="card">
-        <div class="card-header">
-            <i class="fas fa-list me-2"></i>Daftar Peserta
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span><i class="fas fa-list me-2"></i>Daftar Peserta Terdaftar</span>
+            <span class="badge bg-primary"><?= $totalPeserta ?> orang</span>
         </div>
         <div class="card-body">
-            <?php if ($participants->num_rows > 0): ?>
+            <?php if ($totalPeserta > 0): ?>
                 <div class="table-responsive">
-                    <table id="dataTable" class="table table-bordered table-hover w-100">
-                        <thead>
+                    <table id="dataTable" class="table table-bordered table-hover table-sm w-100 align-middle">
+                        <thead class="table-light">
                             <tr>
-                                <th>No</th>
-                                <th>Nama</th>
-                                <?php if ($event['event_type'] == 'umum'): ?>
+                                <th class="text-center" style="width:50px;">No</th>
+                                <th>Nama Lengkap</th>
+                                <th>Email</th>
+                                <?php if ($event['event_type'] === 'umum'): ?>
                                     <th>Instansi</th>
                                 <?php else: ?>
                                     <th>NPM</th>
                                     <th>Fakultas</th>
                                 <?php endif; ?>
                                 <th>Telepon</th>
-                                <th>Waktu Daftar</th>
+                                <th class="text-center">Waktu Daftar</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php $no = 1; while ($p = $participants->fetch_assoc()): ?>
                             <tr>
-                                <td><?= $no++ ?></td>
-                                <td><?= htmlspecialchars($p['full_name']) ?></td>
-                                <?php if ($event['event_type'] == 'umum'): ?>
+                                <td class="text-center text-muted"><?= $no++ ?></td>
+                                <td class="fw-semibold"><?= htmlspecialchars($p['full_name']) ?></td>
+                                <td>
+                                    <a href="mailto:<?= htmlspecialchars($p['email']) ?>"
+                                       class="text-decoration-none small">
+                                        <?= htmlspecialchars($p['email']) ?>
+                                    </a>
+                                </td>
+                                <?php if ($event['event_type'] === 'umum'): ?>
                                     <td><?= htmlspecialchars($p['institution'] ?? '-') ?></td>
                                 <?php else: ?>
-                                    <td><?= htmlspecialchars($p['npm'] ?? '-') ?></td>
+                                    <td><code><?= htmlspecialchars($p['npm'] ?? '-') ?></code></td>
                                     <td><?= htmlspecialchars($p['faculty'] ?? '-') ?></td>
                                 <?php endif; ?>
                                 <td><?= htmlspecialchars($p['phone']) ?></td>
-                                <td><?= date('d/m/Y H:i', strtotime($p['registered_at'])) ?></td>
+                                <td class="text-center small text-muted">
+                                    <?= date('d/m/Y H:i', strtotime($p['registered_at'])) ?>
+                                </td>
                             </tr>
                             <?php endwhile; ?>
                         </tbody>
                     </table>
                 </div>
             <?php else: ?>
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle me-2"></i>Belum ada peserta yang mendaftar.
+                <div class="text-center py-5">
+                    <i class="fas fa-inbox fa-3x text-muted opacity-25 mb-3 d-block"></i>
+                    <h6 class="text-muted">Belum ada peserta yang mendaftar</h6>
+                    <p class="text-muted small">Data peserta akan muncul di sini setelah ada yang mendaftar.</p>
                 </div>
             <?php endif; ?>
         </div>
     </div>
+
 </div>
 
-<?php if ($msg = flash('error')): ?>
-    <div class="alert alert-danger"><?= $msg ?></div>
-<?php endif; ?>
-
 <?php
-$stmt_event->close();
-$stmt_participants->close();
+$stmtP->close();
 $conn->close();
 include '../includes/footer.php';
 ?>
