@@ -1,8 +1,15 @@
 <?php
-// admin/toggle_event.php — Toggle Status Aktif Event (JSON)
-   
-if (session_status() === PHP_SESSION_NONE) session_start();
+// ============================================================
+//  admin/toggle_event.php
+//  Mengubah status aktif/nonaktif sebuah event
+//  Dipanggil via AJAX dari halaman events.php
+// ============================================================
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Cek autentikasi
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode(['success' => false, 'message' => 'Tidak terotorisasi.']);
@@ -12,43 +19,61 @@ $_SESSION['last_activity'] = time();
 
 require_once '../config/database.php';
 
-$isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH'])
-       && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+// Deteksi AJAX
+$is_ajax = !empty($_SERVER['HTTP_X_REQUESTED_WITH'])
+        && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
 
-if ($isAjax) header('Content-Type: application/json; charset=utf-8');
+if ($is_ajax) {
+    header('Content-Type: application/json; charset=utf-8');
+}
 
-function respondToggle(bool $ok, string $msg, bool $isAjax): void
+/**
+ * Kirim respons dan hentikan eksekusi
+ */
+function respondToggle(bool $ok, string $msg, bool $is_ajax): void
 {
-    if ($isAjax) { echo json_encode(['success' => $ok, 'message' => $msg]); exit; }
+    if ($is_ajax) {
+        echo json_encode(['success' => $ok, 'message' => $msg]);
+        exit;
+    }
     $_SESSION[$ok ? 'success' : 'error'] = $msg;
     header('Location: events.php');
     exit;
 }
 
+// Ambil dan validasi ID dari URL
 $id = intval($_GET['id'] ?? 0);
-if (!$id) respondToggle(false, 'ID event tidak valid.', $isAjax);
+if (!$id) {
+    respondToggle(false, 'ID event tidak valid.', $is_ajax);
+}
 
-/* ── Ambil status saat ini ── */
-$stmtSel = $conn->prepare('SELECT is_active, name FROM events WHERE id = ?');
-$stmtSel->bind_param('i', $id);
-$stmtSel->execute();
-$row = $stmtSel->get_result()->fetch_assoc();
-$stmtSel->close();
+// Ambil status aktif saat ini
+$stmt_get = $conn->prepare('SELECT is_active, name FROM events WHERE id = ?');
+$stmt_get->bind_param('i', $id);
+$stmt_get->execute();
+$event = $stmt_get->get_result()->fetch_assoc();
+$stmt_get->close();
 
-if (!$row) respondToggle(false, 'Event tidak ditemukan.', $isAjax);
+if (!$event) {
+    respondToggle(false, 'Event tidak ditemukan.', $is_ajax);
+}
 
-$newStatus = $row['is_active'] ? 0 : 1;
-$label     = $newStatus ? 'diaktifkan' : 'dinonaktifkan';
+// Balik status: jika aktif (1) jadi nonaktif (0), dan sebaliknya
+$new_status = $event['is_active'] ? 0 : 1;
+$keterangan = $new_status ? 'diaktifkan' : 'dinonaktifkan';
 
-/* ── Update status ── */
-$stmtUpd = $conn->prepare('UPDATE events SET is_active = ? WHERE id = ?');
-$stmtUpd->bind_param('ii', $newStatus, $id);
+// Update status di database
+$stmt_upd = $conn->prepare('UPDATE events SET is_active = ? WHERE id = ?');
+$stmt_upd->bind_param('ii', $new_status, $id);
 
-if ($stmtUpd->execute()) {
-    $stmtUpd->close(); $conn->close();
-    respondToggle(true, "Event \"{$row['name']}\" berhasil {$label}.", $isAjax);
+if ($stmt_upd->execute()) {
+    $stmt_upd->close();
+    $conn->close();
+    respondToggle(true, "Event \"{$event['name']}\" berhasil {$keterangan}.", $is_ajax);
 } else {
     $err = $conn->error;
-    $stmtUpd->close(); $conn->close();
-    respondToggle(false, 'Gagal mengubah status event. Silakan coba lagi.', $isAjax);
+    $stmt_upd->close();
+    $conn->close();
+    error_log("toggle_event error: " . $err);
+    respondToggle(false, 'Gagal mengubah status event. Silakan coba lagi.', $is_ajax);
 }

@@ -14,13 +14,12 @@ if ($conn->connect_error) {
     die("Layanan sementara tidak tersedia. Silakan coba beberapa saat lagi.");
 }
 
-// ── BASE_URL: deteksi otomatis ──────────────────────────
+// ── BASE_URL: deteksi otomatis berdasarkan host dan protokol ──────────────────────────
 if (!defined('BASE_URL')) {
     $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
     $httpHost = $_SERVER['HTTP_HOST'] ?? 'localhost';
     define('BASE_URL', $protocol . '://' . $httpHost . '/bem-event/');
 }
 
-// Load helper functions
 require_once __DIR__ . '/../includes/functions.php';
 ?>
