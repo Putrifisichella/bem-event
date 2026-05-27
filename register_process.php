@@ -10,6 +10,15 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+$is_member = !empty($_SESSION['member_logged_in']) && $_SESSION['member_logged_in'] === true;
+
+if ($is_member) {
+    $email = $_SESSION['member_email'] ?? '';
+} else {
+    // Fallback: tolak jika tidak login
+    respond(false, 'Kamu harus login terlebih dahulu untuk mendaftar event.', $is_ajax);
+}
+
 require_once 'config/database.php';
 
 // ============================================================
@@ -78,8 +87,16 @@ if (empty($full_name)) {
     respond(false, 'Nama lengkap wajib diisi.', $is_ajax, $event_id);
 }
 
+$is_member = !empty($_SESSION['member_logged_in']) && $_SESSION['member_logged_in'] === true;
+
+if (!$is_member) {
+    respond(false, 'Silakan login terlebih dahulu untuk mendaftar event.', $is_ajax);
+}
+
+$email = $_SESSION['member_email'] ?? '';
+
 if (empty($email)) {
-    respond(false, 'Alamat email wajib diisi.', $is_ajax, $event_id);
+    respond(false, 'Data sesi tidak valid. Silakan login kembali.', $is_ajax);
 }
 
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {

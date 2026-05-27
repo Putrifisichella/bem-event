@@ -25,7 +25,7 @@ if (isset($_SESSION['last_activity'])) {
         // Hapus semua data sesi dan redirect ke login
         session_unset();
         session_destroy();
-        header('Location: ../admin/login.php?expired=1');
+        header('Location: ../login.php?expired=1');
         exit;
     }
 }
@@ -35,6 +35,6 @@ $_SESSION['last_activity'] = time();
 
 // --- Cek apakah admin sudah login ---
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    header('Location: ../admin/login.php');
+    header('Location: ../login.php');
     exit;
 }

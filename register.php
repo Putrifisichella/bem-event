@@ -1,23 +1,24 @@
 <?php
 // ============================================================
-//  register.php
-//  Halaman form pendaftaran peserta untuk satu event tertentu.
-//  Menampilkan informasi event dan form isian peserta.
+//  register.php  (DIMODIFIKASI)
+//  Peserta wajib login sebelum mendaftar event.
+//  Email diambil otomatis dari sesi, tidak perlu diisi ulang.
 // ============================================================
+
+if (session_status() === PHP_SESSION_NONE) session_start();
 
 $page_title = 'Form Pendaftaran Event — BEM Fasilkom Unsika';
 include 'includes/header.php';
 require_once 'config/database.php';
 
-// Validasi parameter event_id dari URL
+// ── Validasi event_id ──
 if (empty($_GET['event_id'])) {
     header('Location: index.php');
     exit;
 }
-
 $event_id = intval($_GET['event_id']);
 
-// --- Ambil data event: hanya yang aktif dan masih dalam masa pendaftaran ---
+// ── Ambil data event ──
 $stmt = $conn->prepare(
     "SELECT * FROM events
       WHERE id = ?
@@ -34,11 +35,10 @@ if ($result->num_rows === 0) {
     header('Location: index.php');
     exit;
 }
-
 $event = $result->fetch_assoc();
 $stmt->close();
 
-// --- Cek sisa kuota ---
+// ── Cek kuota ──
 $stmt_quota = $conn->prepare('SELECT COUNT(*) AS total FROM registrations WHERE event_id = ?');
 $stmt_quota->bind_param('i', $event_id);
 $stmt_quota->execute();
@@ -47,14 +47,20 @@ $remaining  = $event['quota'] - $registered;
 $stmt_quota->close();
 $conn->close();
 
-// Redirect jika kuota sudah penuh
 if ($remaining <= 0) {
     $_SESSION['error'] = 'Maaf, kuota pendaftaran untuk event ini sudah penuh.';
     header('Location: index.php');
     exit;
 }
 
-// Buat token CSRF untuk keamanan form
+// ── Cek apakah peserta sudah login ──
+$is_logged_in   = !empty($_SESSION['member_logged_in']) && $_SESSION['member_logged_in'] === true;
+$member_email   = $_SESSION['member_email'] ?? '';
+$member_name    = $_SESSION['member_name']  ?? '';
+
+// URL untuk redirect balik setelah login
+$current_url = 'register.php?event_id=' . $event_id;
+
 $csrf_token = generateCsrfToken();
 ?>
 
@@ -63,8 +69,6 @@ $csrf_token = generateCsrfToken();
         <div class="col-lg-8 col-xl-7">
 
             <div class="card shadow-sm border-0">
-
-                <!-- Header kartu -->
                 <div class="card-header py-3 text-white text-center"
                      style="background:linear-gradient(135deg,#1a2e42,#2563eb);">
                     <h4 class="mb-0">
@@ -74,7 +78,7 @@ $csrf_token = generateCsrfToken();
 
                 <div class="card-body p-4">
 
-                    <!-- Info ringkasan event -->
+                    <!-- Info event -->
                     <div class="rounded p-3 mb-4"
                          style="background:#f0f6fc; border:1px solid #c3d9f0;">
                         <h5 class="text-primary fw-bold mb-3">
@@ -107,7 +111,6 @@ $csrf_token = generateCsrfToken();
                         </div>
                     </div>
 
-                    <!-- Gambar event jika ada -->
                     <?php if (!empty($event['documentation'])): ?>
                     <div class="mb-4 text-center">
                         <img src="<?= BASE_URL ?>uploads/<?= htmlspecialchars($event['documentation']) ?>"
@@ -117,55 +120,66 @@ $csrf_token = generateCsrfToken();
                     </div>
                     <?php endif; ?>
 
-                    <!-- Flash message error (fallback untuk non-AJAX) -->
                     <?php if (!empty($_SESSION['error'])): ?>
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <div class="alert alert-danger alert-dismissible fade show">
                         <i class="fas fa-exclamation-circle me-2"></i>
                         <?= htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                     <?php endif; ?>
 
-                    <!-- ================================================================
-                         FORM PENDAFTARAN
-                         - data-event-type  : dibaca JS untuk validasi field dinamis
-                         - action           : dikirim ke register_process.php
-                    ================================================================ -->
+                    <?php if (!$is_logged_in): ?>
+                    <!-- ── Belum login: tampilkan peringatan ── -->
+                    <div class="alert alert-warning text-center">
+                        <i class="fas fa-lock fa-2x d-block mb-2"></i>
+                        <strong>Kamu belum login!</strong><br>
+                        Silakan login atau daftar akun terlebih dahulu untuk mendaftar event ini.
+                    </div>
+                    <div class="d-flex gap-3 justify-content-center">
+                        <a href="login.php?redirect=<?= urlencode($current_url) ?>"
+                           class="btn btn-primary px-4">
+                            <i class="fas fa-sign-in-alt me-2"></i>Masuk
+                        </a>
+                        <a href="member_register.php" class="btn btn-outline-primary px-4">
+                            <i class="fas fa-user-plus me-2"></i>Daftar Akun
+                        </a>
+                    </div>
+
+                    <?php else: ?>
+                    <!-- ── Sudah login: tampilkan form ── -->
+
+                    <!-- Info akun yang sedang login -->
+                    <div class="alert alert-info py-2 d-flex align-items-center gap-2 mb-4">
+                        <i class="fas fa-user-circle fa-lg"></i>
+                        <div class="small">
+                            Mendaftar sebagai <strong><?= htmlspecialchars($member_name) ?></strong>
+                            (<<?= htmlspecialchars($member_email) ?>>).
+                            Bukan kamu? <a href="member_logout.php" class="fw-semibold">Ganti akun</a>
+                        </div>
+                    </div>
+
                     <form id="registerForm"
                           action="register_process.php"
                           method="POST"
                           data-event-type="<?= htmlspecialchars($event['event_type']) ?>">
 
-                        <!-- Token keamanan CSRF -->
                         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
-                        <!-- ID event yang didaftarkan -->
-                        <input type="hidden" name="event_id" value="<?= $event_id ?>">
+                        <input type="hidden" name="event_id"   value="<?= $event_id ?>">
 
-                        <!-- Nama Lengkap -->
+                        <!-- Nama Lengkap (pre-fill dari akun) -->
                         <div class="mb-3">
                             <label for="full_name" class="form-label fw-semibold">
                                 Nama Lengkap <span class="text-danger">*</span>
                             </label>
                             <input type="text" class="form-control" id="full_name" name="full_name"
-                                   placeholder="Masukkan nama lengkap Anda"
-                                   required autocomplete="name">
+                                   value="<?= htmlspecialchars($member_name) ?>"
+                                   placeholder="Nama lengkap" required>
                         </div>
 
-                        <!-- Email -->
-                        <div class="mb-3">
-                            <label for="email" class="form-label fw-semibold">
-                                Email <span class="text-danger">*</span>
-                            </label>
-                            <input type="email" class="form-control" id="email" name="email"
-                                   placeholder="contoh@email.com"
-                                   required autocomplete="email">
-                            <div class="form-text">
-                                <i class="fas fa-info-circle me-1"></i>
-                                Email konfirmasi akan dikirim ke alamat ini.
-                            </div>
-                        </div>
+                        <!-- Email (tersembunyi, diambil dari sesi) -->
+                        <input type="hidden" name="email" value="<?= htmlspecialchars($member_email) ?>">
 
-                        <!-- Field khusus event UMUM: Instansi -->
+                        <!-- Field khusus event UMUM -->
                         <div class="umum-field"
                              <?= ($event['event_type'] !== 'umum') ? 'style="display:none;"' : '' ?>>
                             <div class="mb-3">
@@ -173,11 +187,11 @@ $csrf_token = generateCsrfToken();
                                     Instansi / Asal <span class="text-danger">*</span>
                                 </label>
                                 <input type="text" class="form-control" id="institution" name="institution"
-                                       placeholder="Nama universitas, perusahaan, atau institusi Anda">
+                                       placeholder="Nama universitas, perusahaan, atau institusi">
                             </div>
                         </div>
 
-                        <!-- Field khusus event INTERNAL: NPM & Fakultas -->
+                        <!-- Field khusus event INTERNAL -->
                         <div class="internal-field"
                              <?= ($event['event_type'] !== 'internal') ? 'style="display:none;"' : '' ?>>
                             <div class="mb-3">
@@ -205,12 +219,12 @@ $csrf_token = generateCsrfToken();
                             </label>
                             <input type="tel" class="form-control" id="phone" name="phone"
                                    placeholder="Contoh: 08123456789"
-                                   maxlength="13" pattern="[0-9]{10,13}"
-                                   autocomplete="tel">
-                            <div class="form-text">Masukkan 10–13 digit angka tanpa spasi atau tanda baca.</div>
+                                   maxlength="13" pattern="[0-9]{10,13}">
+                            <div class="form-text">Konfirmasi akan dikirim ke
+                                <strong><?= htmlspecialchars($member_email) ?></strong>.
+                            </div>
                         </div>
 
-                        <!-- Tombol aksi -->
                         <div class="d-flex gap-3">
                             <a href="index.php" class="btn btn-outline-secondary w-50">
                                 <i class="fas fa-arrow-left me-2"></i>Kembali
@@ -221,8 +235,10 @@ $csrf_token = generateCsrfToken();
                         </div>
 
                     </form>
-                </div><!-- /card-body -->
-            </div><!-- /card -->
+                    <?php endif; ?>
+
+                </div>
+            </div>
 
         </div>
     </div>
