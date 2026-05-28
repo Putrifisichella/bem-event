@@ -183,31 +183,37 @@ try {
         respond(false, 'Maaf, kuota pendaftaran untuk event ini baru saja habis.', $is_ajax);
     }
 
-    // Cek duplikasi pendaftaran
+    // ── Cek duplikasi berdasarkan EMAIL (berlaku semua tipe event) ──
+    $stmt_dup_email = $conn->prepare(
+        'SELECT id FROM registrations WHERE event_id = ? AND email = ? LIMIT 1'
+    );
+    $stmt_dup_email->bind_param('is', $event_id, $email);
+    $stmt_dup_email->execute();
+    $stmt_dup_email->store_result();
+
+    if ($stmt_dup_email->num_rows > 0) {
+        $stmt_dup_email->close();
+        $conn->rollback();
+        respond(false, 'Email Anda sudah digunakan untuk mendaftar event ini. Satu email hanya boleh mendaftar satu kali.', $is_ajax);
+    }
+    $stmt_dup_email->close();
+
+    // ── Cek duplikasi NPM (khusus event internal) ──
     if ($event_type === 'internal') {
-        // Cek berdasarkan NPM untuk event internal
-        $stmt_dup = $conn->prepare(
+        $stmt_dup_npm = $conn->prepare(
             'SELECT id FROM registrations WHERE event_id = ? AND npm = ? LIMIT 1'
         );
-        $stmt_dup->bind_param('is', $event_id, $npm);
-    } else {
-        // Cek berdasarkan email untuk event umum
-        $stmt_dup = $conn->prepare(
-            'SELECT id FROM registrations WHERE event_id = ? AND email = ? LIMIT 1'
-        );
-        $stmt_dup->bind_param('is', $event_id, $email);
+        $stmt_dup_npm->bind_param('is', $event_id, $npm);
+        $stmt_dup_npm->execute();
+        $stmt_dup_npm->store_result();
+
+        if ($stmt_dup_npm->num_rows > 0) {
+            $stmt_dup_npm->close();
+            $conn->rollback();
+            respond(false, 'NPM Anda sudah digunakan untuk mendaftar event ini.', $is_ajax);
+        }
+        $stmt_dup_npm->close();
     }
-
-    $stmt_dup->execute();
-    $stmt_dup->store_result();
-
-    if ($stmt_dup->num_rows > 0) {
-        $stmt_dup->close();
-        $conn->rollback();
-        respond(false, 'Anda sudah terdaftar pada event ini sebelumnya.', $is_ajax);
-    }
-    $stmt_dup->close();
-
     // Simpan data pendaftaran
     $stmt_insert = $conn->prepare(
         "INSERT INTO registrations

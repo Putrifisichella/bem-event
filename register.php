@@ -170,7 +170,7 @@ $csrf_token = generateCsrfToken();
                         </div>
 
                         <!-- Email (tersembunyi, diambil dari sesi) -->
-                        <input type="hidden" name="email" value="<?= htmlspecialchars($member_email) ?>">
+                        <input type="hidden" id="email" name="email" value="<?= htmlspecialchars($member_email) ?>">
 
                         <!-- Field khusus event UMUM -->
                         <div class="umum-field"

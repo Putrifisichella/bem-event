@@ -64,9 +64,14 @@ $pct = ($event['quota'] > 0)
                 <i class="fas fa-arrow-left me-1"></i>Kembali
             </a>
             <?php if ($total_peserta > 0): ?>
-            <a href="export_csv.php?event_id=<?= $event_id ?>" class="btn btn-success btn-sm">
+            <a href="export_csv.php?event_id=<?= $event_id ?>"
+            class="btn btn-success btn-sm">
                 <i class="fas fa-file-csv me-1"></i>Export CSV
             </a>
+            <?php else: ?>
+            <button class="btn btn-success btn-sm" disabled title="Belum ada peserta">
+                <i class="fas fa-file-csv me-1"></i>Export CSV
+            </button>
             <?php endif; ?>
         </div>
     </div>

@@ -196,7 +196,7 @@ function sendRegistrationEmail(
           <td style="background:linear-gradient(135deg,#1a2e42,#2563eb);
                      padding:32px 40px;text-align:center;">
             <h1 style="color:#fff;margin:0;font-size:22px;font-weight:700;">
-              🎓 BEM Fasilkom Unsika
+              BEM Fasilkom Unsika
             </h1>
             <p style="color:rgba(255,255,255,.8);margin:8px 0 0;font-size:14px;">
               Sistem Pendaftaran Event
@@ -233,13 +233,9 @@ function sendRegistrationEmail(
                       <p style="margin:4px 0 0;font-size:14px;color:#333;">{$category}</p>
                     </td>
                     <td width="33%" style="padding-top:10px;vertical-align:top;">
-                      <p style="margin:0;font-size:12px;color:#888;">Tipe</p>
-                      <p style="margin:4px 0 0;font-size:14px;color:#333;">{$event_type}</p>
-                    </td>
-                    <td width="33%" style="padding-top:10px;vertical-align:top;">
                       <p style="margin:0;font-size:12px;color:#888;">Tanggal</p>
                       <p style="margin:4px 0 0;font-size:14px;font-weight:600;color:#1a2e42;">
-                        📅 {$event_date}
+                        {$event_date}
                       </p>
                     </td>
                   </tr>

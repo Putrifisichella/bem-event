@@ -157,8 +157,16 @@ if ($is_member && !empty($_SESSION['member_name'])) {
                         </li>
                         <li><hr class="dropdown-divider my-1"></li>
                         <li>
+                            <a class="dropdown-item py-2" style="font-size:.85rem;"
+                            href="<?= BASE_URL ?>my_registrations.php">
+                                <i class="fas fa-history me-2 text-primary" style="width:16px;"></i>
+                                Riwayat Pendaftaran
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider my-1"></li>
+                        <li>
                             <a class="dropdown-item py-2 text-danger" style="font-size:.85rem;"
-                               href="<?= BASE_URL ?>logout.php">
+                            href="<?= BASE_URL ?>logout.php">
                                 <i class="fas fa-sign-out-alt me-2" style="width:16px;"></i>
                                 Keluar
                             </a>
