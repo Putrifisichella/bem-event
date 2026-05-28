@@ -80,13 +80,6 @@ if ($is_member && !empty($_SESSION['member_name'])) {
                         <i class="fas fa-tachometer-alt me-1 opacity-75"></i>Dashboard
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link px-3 py-2 rounded-2"
-                       style="font-size:.875rem; color:rgba(255,255,255,.75);"
-                       href="<?= BASE_URL ?>admin/events.php">
-                        <i class="fas fa-calendar-alt me-1 opacity-75"></i>Kelola Event
-                    </a>
-                </li>
 
                 <!-- Dropdown admin -->
                 <li class="nav-item dropdown ms-lg-1">
@@ -114,20 +107,6 @@ if ($is_member && !empty($_SESSION['member_name'])) {
                                 </p>
                                 <p class="mb-0 text-muted" style="font-size:.75rem;">Administrator</p>
                             </div>
-                        </li>
-                        <li>
-                            <a class="dropdown-item py-2" style="font-size:.85rem;"
-                               href="<?= BASE_URL ?>admin/dashboard.php">
-                                <i class="fas fa-tachometer-alt me-2 text-muted" style="width:16px;"></i>
-                                Dashboard
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item py-2" style="font-size:.85rem;"
-                               href="<?= BASE_URL ?>admin/events.php">
-                                <i class="fas fa-calendar-alt me-2 text-muted" style="width:16px;"></i>
-                                Kelola Event
-                            </a>
                         </li>
                         <li><hr class="dropdown-divider my-1"></li>
                         <li>

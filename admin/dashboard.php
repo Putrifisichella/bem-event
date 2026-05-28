@@ -35,7 +35,7 @@ $today = date('Y-m-d');
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div>
             <h2 class="fw-bold text-primary mb-1">
-                <i class="fas fa-tachometer-alt me-2"></i>Dashboard Admin
+                </i>Dashboard Admin
             </h2>
             <p class="text-muted mb-0 small">
                 <i class="fas fa-calendar me-1"></i><?= date('l, d F Y') ?>
