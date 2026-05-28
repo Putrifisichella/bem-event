@@ -67,7 +67,7 @@ if ($is_member && !empty($_SESSION['member_name'])) {
                     <a class="nav-link px-3 py-2 rounded-2"
                        style="font-size:.875rem; color:rgba(255,255,255,.75);"
                        href="<?= BASE_URL ?>index.php">
-                        <i class="fas fa-home me-1 opacity-75"></i>Beranda
+                       Beranda
                     </a>
                 </li>
 
@@ -77,7 +77,7 @@ if ($is_member && !empty($_SESSION['member_name'])) {
                     <a class="nav-link px-3 py-2 rounded-2"
                        style="font-size:.875rem; color:rgba(255,255,255,.75);"
                        href="<?= BASE_URL ?>admin/dashboard.php">
-                        <i class="fas fa-tachometer-alt me-1 opacity-75"></i>Dashboard
+                       Dashboard
                     </a>
                 </li>
 
@@ -92,11 +92,6 @@ if ($is_member && !empty($_SESSION['member_name'])) {
                             <i class="fas fa-shield-alt text-white" style="font-size:.65rem;"></i>
                         </span>
                         <span><?= htmlspecialchars($_SESSION['admin_username'] ?? 'Admin') ?></span>
-                        <span class="badge ms-1"
-                              style="background:#f59e0b;color:#fff;font-size:.6rem;font-weight:700;
-                                     padding:2px 5px;letter-spacing:.03em;">
-                            ADMIN
-                        </span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-1"
                         style="min-width:200px; border-radius:10px !important; overflow:hidden;">
@@ -112,7 +107,6 @@ if ($is_member && !empty($_SESSION['member_name'])) {
                         <li>
                             <a class="dropdown-item py-2 text-danger" style="font-size:.85rem;"
                                href="<?= BASE_URL ?>logout.php">
-                                <i class="fas fa-sign-out-alt me-2" style="width:16px;"></i>
                                 Keluar
                             </a>
                         </li>
@@ -135,7 +129,7 @@ if ($is_member && !empty($_SESSION['member_name'])) {
                         <span class="d-none d-sm-inline">
                             <?= htmlspecialchars(explode(' ', trim($_SESSION['member_name'] ?? 'Akun'))[0]) ?>
                         </span>
-                        <i class="fas fa-chevron-down ms-1" style="font-size:.6rem; opacity:.7;"></i>
+                        
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-1"
                         style="min-width:220px; border-radius:10px !important; overflow:hidden;">
@@ -179,7 +173,7 @@ if ($is_member && !empty($_SESSION['member_name'])) {
                        style="font-size:.875rem; color:rgba(255,255,255,.75);
                               border:1px solid rgba(255,255,255,.2);"
                        href="<?= BASE_URL ?>login.php">
-                        <i class="fas fa-sign-in-alt me-1"></i>Masuk
+                       Masuk
                     </a>
                 </li>
                 <li class="nav-item ms-lg-1">
@@ -187,7 +181,7 @@ if ($is_member && !empty($_SESSION['member_name'])) {
                        style="background:#fff; color:#1a2e42; font-size:.875rem;
                               border-radius:8px !important; letter-spacing:-.01em;"
                        href="<?= BASE_URL ?>member_register.php">
-                        <i class="fas fa-user-plus me-1"></i>Daftar
+                       Daftar
                     </a>
                 </li>
                 <?php endif; ?>

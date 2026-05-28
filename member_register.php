@@ -6,8 +6,7 @@
 
 if (session_status() === PHP_SESSION_NONE) session_start();
 
-// Jika sudah login, redirect ke beranda
-if (!empty($_SESSION['member_id'])) {
+if (!empty($_SESSION['member_logged_in']) && $_SESSION['member_logged_in'] === true) {
     header('Location: index.php');
     exit;
 }
@@ -19,15 +18,11 @@ include 'includes/header.php';
 <div class="container py-4">
     <div class="row justify-content-center">
         <div class="col-md-5 col-lg-4">
-
             <div class="card shadow-sm border-0">
                 <div class="card-header text-white text-center py-4"
                      style="background:linear-gradient(135deg,#1a2e42,#2563eb);">
-                    <i class="fas fa-user-plus fa-2x mb-2 d-block"></i>
-                    <h5 class="mb-0 fw-bold">Daftar Akun</h5>
-                    <small class="opacity-75">BEM Fasilkom Unsika</small>
+                    Daftar Akun
                 </div>
-
                 <div class="card-body p-4">
 
                     <?php if (!empty($_SESSION['error'])): ?>
@@ -40,7 +35,6 @@ include 'includes/header.php';
 
                     <form action="member_register_process.php" method="POST" autocomplete="off">
 
-                        <!-- Nama Lengkap -->
                         <div class="mb-3">
                             <label for="full_name" class="form-label fw-semibold">
                                 <i class="fas fa-user me-1 text-primary"></i>Nama Lengkap
@@ -48,10 +42,9 @@ include 'includes/header.php';
                             </label>
                             <input type="text" class="form-control" id="full_name" name="full_name"
                                    placeholder="Masukkan nama lengkap" required
-                                   value="<?= htmlspecialchars($_SESSION['old_name'] ?? ''); unset($_SESSION['old_name']); ?>">
+                                   value="<?php echo htmlspecialchars($_SESSION['old_name'] ?? ''); unset($_SESSION['old_name']); ?>">
                         </div>
 
-                        <!-- Email -->
                         <div class="mb-3">
                             <label for="email" class="form-label fw-semibold">
                                 <i class="fas fa-envelope me-1 text-primary"></i>Email
@@ -59,26 +52,19 @@ include 'includes/header.php';
                             </label>
                             <input type="email" class="form-control" id="email" name="email"
                                    placeholder="contoh@email.com" required
-                                   value="<?= htmlspecialchars($_SESSION['old_email'] ?? ''); unset($_SESSION['old_email']); ?>">
-                            <div class="form-text">Email ini akan digunakan untuk konfirmasi pendaftaran event.</div>
+                                   value="<?php echo htmlspecialchars($_SESSION['old_email'] ?? ''); unset($_SESSION['old_email']); ?>">
+                            <div class="form-text">Email ini digunakan untuk login dan konfirmasi event.</div>
                         </div>
 
-                        <!-- Password -->
                         <div class="mb-3">
                             <label for="password" class="form-label fw-semibold">
                                 <i class="fas fa-lock me-1 text-primary"></i>Password
                                 <span class="text-danger">*</span>
                             </label>
-                            <div class="input-group">
-                                <input type="password" class="form-control" id="password" name="password"
-                                       placeholder="Minimal 8 karakter" required minlength="8">
-                                <button class="btn btn-outline-secondary" type="button" id="togglePwd">
-                                    <i class="fas fa-eye" id="eyeIcon"></i>
-                                </button>
-                            </div>
+                            <input type="password" class="form-control" id="password" name="password"
+                                     placeholder="Minimal 8 karakter" required minlength="8">
                         </div>
 
-                        <!-- Konfirmasi Password -->
                         <div class="mb-4">
                             <label for="password_confirm" class="form-label fw-semibold">
                                 <i class="fas fa-lock me-1 text-primary"></i>Konfirmasi Password
@@ -89,7 +75,7 @@ include 'includes/header.php';
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">
-                            <i class="fas fa-user-plus me-2"></i>Daftar Sekarang
+                            Daftar Sekarang
                         </button>
 
                     </form>
@@ -102,7 +88,6 @@ include 'includes/header.php';
 
                 </div>
             </div>
-
         </div>
     </div>
 </div>

@@ -47,9 +47,7 @@ include 'includes/header.php';
                 <!-- Header kartu dengan gaya Gradient Baru -->
                 <div class="card-header text-white text-center py-4"
                      style="background: linear-gradient(135deg, #1a2e42, #2563eb);">
-                    <i class="fas fa-sign-in-alt fa-2x mb-2 d-block"></i>
-                    <h5 class="mb-0 fw-bold">Masuk Akun</h5>
-                    <small class="opacity-75">BEM Fasilkom Unsika</small>
+                    <h5 style="color: white;">Masuk Akun</h5>
                 </div>
 
                 <div class="card-body p-4">
@@ -76,9 +74,6 @@ include 'includes/header.php';
                             <input type="text" class="form-control" id="identifier" name="identifier"
                                    placeholder="Masukkan email atau username" required autofocus
                                    value="<?= htmlspecialchars($_SESSION['old_identifier'] ?? ($_SESSION['old_email'] ?? '')); unset($_SESSION['old_identifier'], $_SESSION['old_email']); ?>">
-                            <div class="form-text small" style="font-size: .78rem;">
-                                Member gunakan <em>email</em> · Admin gunakan <em>username</em>
-                            </div>
                         </div>
 
                         <!-- Password -->
@@ -89,14 +84,11 @@ include 'includes/header.php';
                             <div class="input-group">
                                 <input type="password" class="form-control" id="password" name="password"
                                        placeholder="Masukkan password" required>
-                                <button class="btn btn-outline-secondary" type="button" id="togglePwd">
-                                    <i class="fas fa-eye" id="eyeIcon"></i>
-                                </button>
                             </div>
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">
-                            <i class="fas fa-sign-in-alt me-2"></i>Masuk
+                            Masuk
                         </button>
 
                     </form>

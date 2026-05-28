@@ -64,7 +64,7 @@ $csrf = generateCsrfToken();
     <div class="card border-0 shadow-sm">
         <div class="card-header bg-white d-flex justify-content-between align-items-center">
             <span class="fw-bold">
-                <i class="fas fa-list me-2 text-primary"></i>Daftar Semua Event
+                Daftar Semua Event
             </span>
             <span class="badge bg-primary">
                 <?= $result ? $result->num_rows : 0 ?> event
@@ -176,7 +176,7 @@ $csrf = generateCsrfToken();
                                        title="Lihat Peserta"
                                        data-bs-toggle="tooltip">
                                         <i class="fas fa-users"></i>
-                                        <span class="d-none d-xl-inline ms-1">Peserta</span>
+                                        <span class="d-none d-xl-inline ms-1"></span>
                                     </a>
 
                                     <!-- Edit Event -->
@@ -185,7 +185,7 @@ $csrf = generateCsrfToken();
                                        title="Edit Event"
                                        data-bs-toggle="tooltip">
                                         <i class="fas fa-edit"></i>
-                                        <span class="d-none d-xl-inline ms-1">Edit</span>
+                                        <span class="d-none d-xl-inline ms-1"></span>
                                     </a>
 
                                     <!-- Hapus Event (via AJAX dengan konfirmasi) -->
@@ -197,7 +197,7 @@ $csrf = generateCsrfToken();
                                                 title="Hapus Event"
                                                 data-bs-toggle="tooltip">
                                             <i class="fas fa-trash"></i>
-                                            <span class="d-none d-xl-inline ms-1">Hapus</span>
+                                            <span class="d-none d-xl-inline ms-1"></span>
                                         </button>
                                     </form>
 
@@ -209,9 +209,7 @@ $csrf = generateCsrfToken();
                                        title="<?= $is_deactivatable ? 'Nonaktifkan' : 'Aktifkan' ?>"
                                        data-bs-toggle="tooltip">
                                         <i class="fas <?= $is_deactivatable ? 'fa-ban' : 'fa-check' ?>"></i>
-                                        <span class="d-none d-xl-inline ms-1">
-                                            <?= $is_deactivatable ? 'Off' : 'On' ?>
-                                        </span>
+                                        
                                     </a>
 
                                 </div>

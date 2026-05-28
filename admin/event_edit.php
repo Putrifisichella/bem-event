@@ -55,8 +55,8 @@ include '../includes/header.php';
             <div class="card border-0 shadow-sm">
                 <div class="card-header text-white text-center py-3"
                      style="background:linear-gradient(135deg,#92400e,#f59e0b);">
-                    <h5 class="mb-0">
-                        <i class="fas fa-edit me-2"></i>Edit Event
+                    <h5 class="mb-0" style="color: white;">
+                        Edit Event
                     </h5>
                 </div>
 
@@ -122,7 +122,7 @@ include '../includes/header.php';
                                     <input class="form-check-input" type="checkbox"
                                            id="delete_documentation" name="delete_documentation" value="1">
                                     <label class="form-check-label text-danger small" for="delete_documentation">
-                                        <i class="fas fa-trash me-1"></i>Hapus gambar ini
+                                        Hapus gambar ini
                                     </label>
                                 </div>
                             <?php else: ?>
@@ -222,7 +222,6 @@ include '../includes/header.php';
                                    id="is_active" name="is_active" value="1"
                                    <?= $event['is_active'] ? 'checked' : '' ?>>
                             <label class="form-check-label" for="is_active">
-                                <i class="fas fa-check-circle text-success me-1"></i>
                                 Event aktif (dapat diakses oleh peserta)
                             </label>
                         </div>
@@ -230,10 +229,10 @@ include '../includes/header.php';
                         <!-- Tombol Aksi -->
                         <div class="d-flex gap-3 justify-content-end">
                             <a href="events.php" class="btn btn-outline-secondary px-4">
-                                <i class="fas fa-times me-2"></i>Batal
+                                Batal
                             </a>
                             <button type="submit" class="btn btn-warning text-white px-5">
-                                <i class="fas fa-save me-2"></i>Simpan Perubahan
+                                Simpan Perubahan
                             </button>
                         </div>
 

@@ -93,7 +93,7 @@ define('DESC_PREVIEW_LENGTH', 100);
                 <!-- Input pencarian nama event -->
                 <div class="col-md-5">
                     <input type="text" name="search" class="form-control"
-                           placeholder="🔍 Cari nama event..."
+                           placeholder=" Cari nama event..."
                            value="<?= htmlspecialchars($search) ?>">
                 </div>
 
@@ -257,7 +257,7 @@ define('DESC_PREVIEW_LENGTH', 100);
                         <?php else: ?>
                             <a href="register.php?event_id=<?= $event['id'] ?>"
                                class="btn btn-primary w-100">
-                                <i class="fas fa-edit me-1"></i>Daftar Sekarang
+                               Daftar Sekarang
                             </a>
                         <?php endif; ?>
 

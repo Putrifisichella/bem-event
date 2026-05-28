@@ -233,7 +233,7 @@ $(document).ready(function () {
                       || 'event ini';
 
         Swal.fire({
-            title            : '⚠️ Hapus Event?',
+            title            : 'Hapus Event?',
             html             : 'Event <strong>"' + _escHtml(event_name) + '"</strong> akan dihapus '
                              + 'beserta seluruh data pesertanya.<br>'
                              + '<small class="text-danger fw-semibold">Tindakan ini tidak dapat dibatalkan!</small>',
@@ -241,7 +241,7 @@ $(document).ready(function () {
             showCancelButton : true,
             confirmButtonColor: '#ef4444',
             cancelButtonColor : '#6b7280',
-            confirmButtonText : '<i class="fas fa-trash me-1"></i>Ya, Hapus!',
+            confirmButtonText : 'Ya, Hapus!',
             cancelButtonText  : 'Batal',
             reverseButtons    : true
         }).then(function (result) {

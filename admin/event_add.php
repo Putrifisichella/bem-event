@@ -31,8 +31,8 @@ $categories = ['Seminar', 'Workshop', 'Lomba', 'Sosial', 'Pelatihan', 'Lainnya']
             <div class="card border-0 shadow-sm">
                 <div class="card-header text-white text-center py-3"
                      style="background:linear-gradient(135deg,#1a2e42,#2563eb);">
-                    <h5 class="mb-0">
-                        <i class="fas fa-plus-circle me-2"></i>Tambah Event Baru
+                    <h5 class="mb-0" style="color: white;">
+                        Tambah Event Baru
                     </h5>
                 </div>
 
@@ -160,7 +160,6 @@ $categories = ['Seminar', 'Workshop', 'Lomba', 'Sosial', 'Pelatihan', 'Lainnya']
                             <input class="form-check-input" type="checkbox"
                                    id="is_active" name="is_active" value="1" checked>
                             <label class="form-check-label" for="is_active">
-                                <i class="fas fa-check-circle text-success me-1"></i>
                                 Aktifkan event (langsung dapat diakses peserta)
                             </label>
                         </div>
@@ -168,10 +167,10 @@ $categories = ['Seminar', 'Workshop', 'Lomba', 'Sosial', 'Pelatihan', 'Lainnya']
                         <!-- Tombol Aksi -->
                         <div class="d-flex gap-3 justify-content-end">
                             <a href="events.php" class="btn btn-outline-secondary px-4">
-                                <i class="fas fa-times me-2"></i>Batal
+                                Batal
                             </a>
                             <button type="submit" class="btn btn-primary px-5">
-                                <i class="fas fa-save me-2"></i>Simpan Event
+                                Simpan Event
                             </button>
                         </div>
 

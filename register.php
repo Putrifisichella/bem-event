@@ -71,8 +71,8 @@ $csrf_token = generateCsrfToken();
             <div class="card shadow-sm border-0">
                 <div class="card-header py-3 text-white text-center"
                      style="background:linear-gradient(135deg,#1a2e42,#2563eb);">
-                    <h4 class="mb-0">
-                        <i class="fas fa-edit me-2"></i>Form Pendaftaran Event
+                    <h4 class="mb-0" style="color: white;">
+                        Form Pendaftaran Event
                     </h4>
                 </div>
 
@@ -82,27 +82,22 @@ $csrf_token = generateCsrfToken();
                     <div class="rounded p-3 mb-4"
                          style="background:#f0f6fc; border:1px solid #c3d9f0;">
                         <h5 class="text-primary fw-bold mb-3">
-                            <i class="fas fa-calendar-alt me-2"></i>
                             <?= htmlspecialchars($event['name']) ?>
                         </h5>
                         <div class="row g-2 small">
                             <div class="col-sm-6">
-                                <i class="fas fa-tag me-1 text-primary"></i>
                                 <strong>Kategori:</strong> <?= htmlspecialchars($event['category']) ?>
                             </div>
                             <div class="col-sm-6">
-                                <i class="fas fa-users me-1 text-primary"></i>
                                 <strong>Tipe:</strong> <?= ucfirst($event['event_type']) ?>
                             </div>
                             <?php if (!empty($event['event_date'])): ?>
                             <div class="col-sm-6">
-                                <i class="fas fa-calendar-day me-1 text-primary"></i>
                                 <strong>Tanggal:</strong>
                                 <?= date('d M Y', strtotime($event['event_date'])) ?>
                             </div>
                             <?php endif; ?>
                             <div class="col-sm-6">
-                                <i class="fas fa-chair me-1 text-primary"></i>
                                 <strong>Sisa kuota:</strong>
                                 <span class="fw-bold <?= $remaining <= 10 ? 'text-danger' : 'text-success' ?>">
                                     <?= $remaining ?> tempat
@@ -138,10 +133,10 @@ $csrf_token = generateCsrfToken();
                     <div class="d-flex gap-3 justify-content-center">
                         <a href="login.php?redirect=<?= urlencode($current_url) ?>"
                            class="btn btn-primary px-4">
-                            <i class="fas fa-sign-in-alt me-2"></i>Masuk
+                            Masuk
                         </a>
                         <a href="member_register.php" class="btn btn-outline-primary px-4">
-                            <i class="fas fa-user-plus me-2"></i>Daftar Akun
+                            Daftar Akun
                         </a>
                     </div>
 
@@ -150,10 +145,8 @@ $csrf_token = generateCsrfToken();
 
                     <!-- Info akun yang sedang login -->
                     <div class="alert alert-info py-2 d-flex align-items-center gap-2 mb-4">
-                        <i class="fas fa-user-circle fa-lg"></i>
                         <div class="small">
-                            Mendaftar sebagai <strong><?= htmlspecialchars($member_name) ?></strong>
-                            (<<?= htmlspecialchars($member_email) ?>>).
+                            Mendaftar sebagai <strong><?= htmlspecialchars($member_name) ?>.</strong>
                             Bukan kamu? <a href="member_logout.php" class="fw-semibold">Ganti akun</a>
                         </div>
                     </div>
@@ -230,7 +223,7 @@ $csrf_token = generateCsrfToken();
                                 <i class="fas fa-arrow-left me-2"></i>Kembali
                             </a>
                             <button type="submit" class="btn btn-primary w-50">
-                                <i class="fas fa-paper-plane me-2"></i>Daftar Sekarang
+                                Daftar Sekarang
                             </button>
                         </div>
 

@@ -37,9 +37,6 @@ $today = date('Y-m-d');
             <h2 class="fw-bold text-primary mb-1">
                 </i>Dashboard Admin
             </h2>
-            <p class="text-muted mb-0 small">
-                <i class="fas fa-calendar me-1"></i><?= date('l, d F Y') ?>
-            </p>
         </div>
         <a href="event_add.php" class="btn btn-primary">
             <i class="fas fa-plus-circle me-1"></i>Tambah Event Baru
@@ -111,14 +108,14 @@ $today = date('Y-m-d');
         <div class="col-lg-4">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-white fw-bold border-bottom">
-                    <i class="fas fa-bolt me-2 text-warning"></i>Aksi Cepat
+                    Aksi Cepat
                 </div>
                 <div class="card-body d-grid gap-3">
                     <a href="event_add.php" class="btn btn-primary">
-                        <i class="fas fa-plus-circle me-2"></i>Tambah Event Baru
+                        Tambah Event Baru
                     </a>
                     <a href="events.php" class="btn btn-outline-primary">
-                        <i class="fas fa-list me-2"></i>Kelola Semua Event
+                        Kelola Semua Event
                     </a>
                 </div>
             </div>
@@ -128,7 +125,7 @@ $today = date('Y-m-d');
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-white fw-bold border-bottom">
-                    <i class="fas fa-clock me-2 text-info"></i>Event Terbaru
+                    Event Terbaru
                 </div>
                 <div class="card-body p-0">
                     <ul class="list-group list-group-flush">
@@ -138,7 +135,6 @@ $today = date('Y-m-d');
                         ?>
                         <li class="list-group-item d-flex justify-content-between align-items-center py-3 px-4">
                             <div>
-                                <i class="fas fa-calendar-day text-primary me-2"></i>
                                 <span class="fw-semibold"><?= htmlspecialchars($ev['name']) ?></span>
 
                                 <!-- Badge status event -->

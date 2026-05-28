@@ -53,7 +53,7 @@ $pct = ($event['quota'] > 0)
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div>
             <h2 class="fw-bold text-primary mb-1 fs-4">
-                <i class="fas fa-users me-2"></i>Data Peserta
+                Data Peserta
             </h2>
             <p class="text-muted small mb-0">
                 Event: <strong><?= htmlspecialchars($event['name']) ?></strong>
@@ -75,7 +75,7 @@ $pct = ($event['quota'] > 0)
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-header text-white fw-bold"
              style="background:linear-gradient(135deg,#1a2e42,#2563eb);">
-            <i class="fas fa-info-circle me-2"></i>Informasi Event
+             Informasi Event
         </div>
         <div class="card-body">
             <div class="row g-3">
@@ -130,7 +130,7 @@ $pct = ($event['quota'] > 0)
     <div class="card border-0 shadow-sm">
         <div class="card-header bg-white d-flex justify-content-between align-items-center fw-bold">
             <span>
-                <i class="fas fa-list me-2 text-primary"></i>Daftar Peserta Terdaftar
+                Daftar Peserta Terdaftar
             </span>
             <span class="badge bg-primary"><?= $total_peserta ?> orang</span>
         </div>
