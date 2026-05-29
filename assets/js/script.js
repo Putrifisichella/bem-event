@@ -180,12 +180,20 @@ $(document).ready(function () {
                     Swal.fire({
                         icon             : 'success',
                         title            : '🎉 Pendaftaran Berhasil!',
-                        html             : res.message,
-                        confirmButtonText: 'Kembali ke Beranda',
+                        html             : res.message +
+                                        '<br><br><small class="text-muted">Bukti pendaftaran tersedia di halaman Riwayat Pendaftaran.</small>',
+                        confirmButtonText: 'Lihat Bukti Pendaftaran',
+                        showDenyButton   : true,
+                        denyButtonText   : 'Kembali ke Beranda',
                         confirmButtonColor: '#2563eb',
+                        denyButtonColor  : '#6b7280',
                         allowOutsideClick: false
-                    }).then(function () {
-                        window.location.href = 'index.php';
+                    }).then(function (result) {
+                        if (result.isConfirmed) {
+                            window.location.href = 'my_registrations.php';
+                        } else {
+                            window.location.href = 'index.php';
+                        }
                     });
                 } else {
                     // Pendaftaran gagal: tampilkan pesan error

@@ -1,12 +1,11 @@
 <?php
 // ============================================================
 //  my_registrations.php
-//  Riwayat pendaftaran event untuk member yang sudah login
+//  Riwayat pendaftaran event — berfungsi sebagai bukti pendaftaran
 // ============================================================
 
 if (session_status() === PHP_SESSION_NONE) session_start();
 
-// Harus login sebagai member
 if (empty($_SESSION['member_logged_in']) || $_SESSION['member_logged_in'] !== true) {
     header('Location: login.php?redirect=' . urlencode('my_registrations.php'));
     exit;
@@ -19,7 +18,6 @@ require_once 'config/database.php';
 $member_email = $_SESSION['member_email'] ?? '';
 $today        = date('Y-m-d');
 
-// --- Ambil semua pendaftaran milik user ini beserta data event ---
 $stmt = $conn->prepare(
     "SELECT
         r.id            AS reg_id,
@@ -40,6 +38,7 @@ $stmt = $conn->prepare(
         e.quota,
         e.is_active,
         e.documentation,
+        e.description,
         (SELECT COUNT(*) FROM registrations rc WHERE rc.event_id = e.id) AS total_registered
      FROM registrations r
      JOIN events e ON e.id = r.event_id
@@ -48,42 +47,37 @@ $stmt = $conn->prepare(
 );
 $stmt->bind_param('s', $member_email);
 $stmt->execute();
-$result      = $stmt->get_result();
-$total_regs  = $result->num_rows;
+$result     = $stmt->get_result();
+$total_regs = $result->num_rows;
 $stmt->close();
 $conn->close();
 
-// Helper: tentukan status event
 function getEventStatus(array $ev, string $today): array {
     if (!$ev['is_active']) {
-        return ['label' => 'Nonaktif',        'color' => 'secondary', 'icon' => 'fa-ban'];
+        return ['label' => 'Nonaktif',    'color' => 'secondary', 'icon' => 'fa-ban'];
     }
     if ($today < $ev['event_date']) {
-        return ['label' => 'Akan Datang',     'color' => 'info',      'icon' => 'fa-clock'];
+        return ['label' => 'Akan Datang', 'color' => 'info',      'icon' => 'fa-clock'];
     }
     if ($today === $ev['event_date']) {
-        return ['label' => 'Berlangsung',     'color' => 'success',   'icon' => 'fa-circle-play'];
+        return ['label' => 'Berlangsung', 'color' => 'success',   'icon' => 'fa-circle-play'];
     }
-    return     ['label' => 'Selesai',         'color' => 'secondary', 'icon' => 'fa-circle-check'];
+    return     ['label' => 'Selesai',     'color' => 'secondary', 'icon' => 'fa-circle-check'];
 }
 ?>
 
 <div class="container py-2">
 
-    <!-- ── Judul ── -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div>
-            <h2 class="fw-bold text-primary mb-1 fs-4">
-                Riwayat Pendaftaran
-            </h2>
+            <h2 class="fw-bold text-primary mb-1 fs-4">Riwayat Pendaftaran</h2>
             <p class="text-muted small mb-0">
-                Semua event yang pernah Anda daftarkan
+                Halaman ini berfungsi sebagai bukti pendaftaran event Anda
             </p>
         </div>
     </div>
 
     <?php if ($total_regs === 0): ?>
-    <!-- ── Kosong ── -->
     <div class="card border-0 shadow-sm">
         <div class="card-body text-center py-5">
             <div class="mb-3" style="font-size:3.5rem; opacity:.18;">
@@ -102,12 +96,11 @@ function getEventStatus(array $ev, string $today): array {
 
     <?php else: ?>
 
-    <!-- ── Counter ── -->
+    <!-- Statistik -->
     <div class="row g-3 mb-4">
         <?php
-        // Hitung statistik dari result (rewind pointer)
         $result->data_seek(0);
-        $cnt_upcoming = 0; $cnt_done = 0; $cnt_all = $total_regs;
+        $cnt_upcoming = 0; $cnt_done = 0;
         while ($row = $result->fetch_assoc()) {
             $st = getEventStatus($row, $today);
             if (in_array($st['label'], ['Akan Datang', 'Berlangsung'])) $cnt_upcoming++;
@@ -117,160 +110,156 @@ function getEventStatus(array $ev, string $today): array {
         ?>
         <div class="col-4">
             <div class="card border-0 shadow-sm text-center py-3"
-                 style="border-top: 3px solid #2563eb !important;">
-                <div class="fw-bold fs-3 text-primary"><?= $cnt_all ?></div>
+                 style="border-top:3px solid #2563eb !important;">
+                <div class="fw-bold fs-3 text-primary"><?= $total_regs ?></div>
                 <div class="text-muted small">Total</div>
             </div>
         </div>
         <div class="col-4">
             <div class="card border-0 shadow-sm text-center py-3"
-                 style="border-top: 3px solid #10b981 !important;">
+                 style="border-top:3px solid #10b981 !important;">
                 <div class="fw-bold fs-3" style="color:#10b981;"><?= $cnt_upcoming ?></div>
                 <div class="text-muted small">Aktif / Akan Datang</div>
             </div>
         </div>
         <div class="col-4">
             <div class="card border-0 shadow-sm text-center py-3"
-                 style="border-top: 3px solid #94a3b8 !important;">
+                 style="border-top:3px solid #94a3b8 !important;">
                 <div class="fw-bold fs-3 text-secondary"><?= $cnt_done ?></div>
                 <div class="text-muted small">Selesai</div>
             </div>
         </div>
     </div>
 
-    <!-- ── Daftar Kartu Riwayat ── -->
+    <!-- Daftar Kartu Riwayat / Bukti Pendaftaran -->
     <div class="d-flex flex-column gap-3">
         <?php while ($reg = $result->fetch_assoc()):
             $status     = getEventStatus($reg, $today);
             $event_date = !empty($reg['event_date'])
                           ? date('d M Y', strtotime($reg['event_date'])) : '-';
             $reg_date   = date('d M Y, H:i', strtotime($reg['registered_at']));
-            $sisa_kuota = $reg['quota'] - $reg['total_registered'];
+            $reg_code   = 'BEM-' . strtoupper(substr(md5($reg['reg_id'] . $reg['email']), 0, 8));
         ?>
-        <div class="card border-0 shadow-sm overflow-hidden registration-card">
-            <div class="row g-0">
+        <div class="card border-0 shadow-sm overflow-hidden registration-card" id="bukti-<?= $reg['reg_id'] ?>">
 
-                <!-- Thumbnail event -->
-                <div class="col-auto d-none d-sm-flex align-items-stretch">
-                    <?php if (!empty($reg['documentation'])): ?>
+            <!-- Header kartu bukti -->
+            <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2"
+                 style="background:linear-gradient(135deg,#1a2e42,#2563eb); color:#fff;">
+                <div>
+                    <div class="fw-bold" style="font-size:.85rem; opacity:.7; letter-spacing:.05em;">
+                        BUKTI PENDAFTARAN
+                    </div>
+                    <div class="fw-bold" style="font-size:1rem;">
+                        <?= htmlspecialchars($reg['event_name']) ?>
+                    </div>
+                </div>
+                <div class="text-end">
+                    <div style="font-size:.7rem; opacity:.75;">Kode Pendaftaran</div>
+                    <div class="fw-bold" style="font-size:.95rem; font-family:monospace; letter-spacing:.08em;">
+                        <?= $reg_code ?>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body p-4">
+                <div class="row g-4">
+
+                    <!-- Kolom kiri: info peserta -->
+                    <div class="col-md-6">
+                        <h6 class="fw-bold text-primary mb-3" style="font-size:.8rem; text-transform:uppercase; letter-spacing:.05em;">
+                            <i class="fas fa-user me-2"></i>Data Peserta
+                        </h6>
+                        <table class="table table-sm table-borderless mb-0" style="font-size:.85rem;">
+                            <tbody>
+                                <tr>
+                                    <td class="text-muted ps-0" style="width:40%;">Nama Lengkap</td>
+                                    <td class="fw-semibold"><?= htmlspecialchars($reg['full_name']) ?></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted ps-0">Email</td>
+                                    <td><?= htmlspecialchars($reg['email']) ?></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted ps-0">Telepon</td>
+                                    <td><?= htmlspecialchars($reg['phone']) ?></td>
+                                </tr>
+                                <?php if ($reg['event_type'] === 'internal'): ?>
+                                <tr>
+                                    <td class="text-muted ps-0">NPM</td>
+                                    <td><code><?= htmlspecialchars($reg['npm'] ?? '-') ?></code></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted ps-0">Fakultas</td>
+                                    <td><?= htmlspecialchars($reg['faculty'] ?? '-') ?></td>
+                                </tr>
+                                <?php else: ?>
+                                <tr>
+                                    <td class="text-muted ps-0">Instansi</td>
+                                    <td><?= htmlspecialchars($reg['institution'] ?? '-') ?></td>
+                                </tr>
+                                <?php endif; ?>
+                                <tr>
+                                    <td class="text-muted ps-0">Tgl Daftar</td>
+                                    <td><?= $reg_date ?></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Kolom kanan: info event -->
+                    <div class="col-md-6">
+                        <h6 class="fw-bold text-primary mb-3" style="font-size:.8rem; text-transform:uppercase; letter-spacing:.05em;">
+                            <i class="fas fa-calendar-alt me-2"></i>Detail Event
+                        </h6>
+
+                        <?php if (!empty($reg['documentation'])): ?>
                         <img src="<?= BASE_URL ?>uploads/<?= htmlspecialchars($reg['documentation']) ?>"
-                             alt="<?= htmlspecialchars($reg['event_name']) ?>"
-                             style="width:130px; height:100%; object-fit:cover;">
-                    <?php else: ?>
-                        <div class="d-flex align-items-center justify-content-center bg-light"
-                             style="width:130px;">
-                            <i class="fas fa-calendar-alt fa-2x text-muted opacity-25"></i>
-                        </div>
-                    <?php endif; ?>
+                             class="img-fluid rounded mb-3"
+                             style="max-height:120px; width:100%; object-fit:cover;"
+                             alt="Poster event">
+                        <?php endif; ?>
+
+                        <table class="table table-sm table-borderless mb-0" style="font-size:.85rem;">
+                            <tbody>
+                                <tr>
+                                    <td class="text-muted ps-0" style="width:40%;">Kategori</td>
+                                    <td><?= htmlspecialchars($reg['category']) ?></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted ps-0">Tipe</td>
+                                    <td><?= ucfirst($reg['event_type']) ?></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted ps-0">Tanggal</td>
+                                    <td class="fw-semibold"><?= $event_date ?></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted ps-0">Status Event</td>
+                                    <td>
+                                        <span class="badge bg-<?= $status['color'] ?>" style="font-size:.68rem;">
+                                            <i class="fas <?= $status['icon'] ?> me-1"></i>
+                                            <?= $status['label'] ?>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
                 </div>
 
-                <!-- Konten utama -->
-                <div class="col">
-                    <div class="card-body p-3 p-md-4">
-                        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
-
-                            <!-- Nama event + badge -->
-                            <div class="flex-grow-1">
-                                <h5 class="fw-bold mb-1" style="font-size:.95rem;">
-                                    <?= htmlspecialchars($reg['event_name']) ?>
-                                </h5>
-                                <div class="d-flex flex-wrap gap-1">
-                                    <!-- Kategori -->
-                                    <span class="badge bg-info bg-opacity-10 text-info"
-                                          style="font-size:.68rem; font-weight:600;">
-                                        <?= htmlspecialchars($reg['category']) ?>
-                                    </span>
-                                    <!-- Tipe -->
-                                    <span class="badge"
-                                          style="font-size:.68rem; font-weight:600;
-                                                 background:<?= $reg['event_type']==='umum' ? '#dbeafe' : '#ede9fe' ?>;
-                                                 color:<?= $reg['event_type']==='umum' ? '#1d4ed8' : '#6d28d9' ?>;">
-                                        <?= ucfirst($reg['event_type']) ?>
-                                    </span>
-                                    <!-- Status event -->
-                                    <span class="badge bg-<?= $status['color'] ?>"
-                                          style="font-size:.68rem;">
-                                        <i class="fas <?= $status['icon'] ?> me-1"></i>
-                                        <?= $status['label'] ?>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <!-- Nomor urut pendaftaran -->
-                            <div class="text-end">
-                                <div class="text-muted" style="font-size:.7rem;">ID Daftar</div>
-                                <div class="fw-bold text-primary" style="font-size:.8rem;">
-                                    #<?= str_pad($reg['reg_id'], 5, '0', STR_PAD_LEFT) ?>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Info detail -->
-                        <div class="row g-2 small text-muted mb-3">
-                            <div class="col-6 col-md-3">
-                                <i class="fas fa-calendar-day me-1 text-primary"></i>
-                                <span class="fw-semibold text-dark">Tgl Event</span><br>
-                                <span><?= $event_date ?></span>
-                            </div>
-                            <div class="col-6 col-md-3">
-                                <i class="fas fa-clock me-1 text-primary"></i>
-                                <span class="fw-semibold text-dark">Tgl Daftar</span><br>
-                                <span><?= $reg_date ?></span>
-                            </div>
-                            <div class="col-6 col-md-3">
-                                <i class="fas fa-user me-1 text-primary"></i>
-                                <span class="fw-semibold text-dark">Nama</span><br>
-                                <span><?= htmlspecialchars($reg['full_name']) ?></span>
-                            </div>
-                            <div class="col-6 col-md-3">
-                                <i class="fas fa-phone me-1 text-primary"></i>
-                                <span class="fw-semibold text-dark">Telepon</span><br>
-                                <span><?= htmlspecialchars($reg['phone']) ?></span>
-                            </div>
-
-                            <?php if ($reg['event_type'] === 'internal'): ?>
-                            <div class="col-6 col-md-3">
-                                <i class="fas fa-id-card me-1 text-primary"></i>
-                                <span class="fw-semibold text-dark">NPM</span><br>
-                                <code style="font-size:.78rem;"><?= htmlspecialchars($reg['npm'] ?? '-') ?></code>
-                            </div>
-                            <div class="col-6 col-md-3">
-                                <i class="fas fa-building me-1 text-primary"></i>
-                                <span class="fw-semibold text-dark">Fakultas</span><br>
-                                <span><?= htmlspecialchars($reg['faculty'] ?? '-') ?></span>
-                            </div>
-                            <?php else: ?>
-                            <div class="col-6 col-md-3">
-                                <i class="fas fa-building me-1 text-primary"></i>
-                                <span class="fw-semibold text-dark">Instansi</span><br>
-                                <span><?= htmlspecialchars($reg['institution'] ?? '-') ?></span>
-                            </div>
-                            <?php endif; ?>
-                        </div>
-
-                        <!-- Progress kuota -->
-                        <?php
-                        $pct = ($reg['quota'] > 0)
-                               ? min(100, round($reg['total_registered'] / $reg['quota'] * 100))
-                               : 100;
-                        ?>
-                        <div class="d-flex align-items-center gap-2">
-                            <div class="flex-grow-1">
-                                <div class="progress" style="height:5px; border-radius:9999px;">
-                                    <div class="progress-bar
-                                        <?= $pct >= 90 ? 'bg-danger' : ($pct >= 70 ? 'bg-warning' : 'bg-success') ?>"
-                                         style="width:<?= $pct ?>%; border-radius:9999px;"
-                                         role="progressbar">
-                                    </div>
-                                </div>
-                            </div>
-                            <span class="text-muted" style="font-size:.7rem; white-space:nowrap;">
-                                <?= $reg['total_registered'] ?>/<?= $reg['quota'] ?> peserta
-                                (<?= $pct ?>%)
-                            </span>
-                        </div>
-
-                    </div>
+                <!-- Footer bukti -->
+                <hr class="my-3">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <p class="text-muted mb-0" style="font-size:.75rem;">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Simpan halaman ini atau cetak sebagai bukti pendaftaran Anda.
+                        Tunjukkan kode <strong><?= $reg_code ?></strong> kepada panitia saat acara berlangsung.
+                    </p>
+                    <button onclick="cetakBukti('bukti-<?= $reg['reg_id'] ?>')"
+                            class="btn btn-outline-primary btn-sm no-print">
+                        <i class="fas fa-print me-1"></i>Cetak Bukti Ini
+                    </button>
                 </div>
 
             </div>
@@ -282,7 +271,7 @@ function getEventStatus(array $ev, string $today): array {
 
 </div>
 
-<!-- Animasi kartu masuk -->
+<!-- CSS tambahan untuk tampilan cetak -->
 <style>
 .registration-card {
     transition: transform .25s, box-shadow .25s;
@@ -296,12 +285,64 @@ function getEventStatus(array $ev, string $today): array {
     from { opacity:0; transform: translateY(14px); }
     to   { opacity:1; transform: translateY(0); }
 }
-<?php
-// Animasi bertahap per kartu
-for ($i = 1; $i <= $total_regs; $i++) {
-    echo ".registration-card:nth-child({$i}) { animation-delay: " . ($i * 0.06) . "s; }\n";
+<?php for ($i = 1; $i <= $total_regs; $i++): ?>
+.registration-card:nth-child(<?= $i ?>) { animation-delay: <?= $i * 0.06 ?>s; }
+<?php endfor; ?>
+
+@media print {
+    nav, footer, .no-print { display: none !important; }
+    body { background: white !important; font-size: 12pt; }
+    .card { box-shadow: none !important; border: 1px solid #ddd !important; page-break-inside: avoid; }
+    .card-header { background: #1a2e42 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .container { max-width: 100% !important; }
+    .registration-card { margin-bottom: 20px; }
 }
-?>
 </style>
+
+<!-- Script cetak per kartu -->
+<script>
+function cetakBukti(elementId) {
+    var konten  = document.getElementById(elementId).outerHTML;
+    var jendela = window.open('', '_blank');
+    jendela.document.write(`
+        <!DOCTYPE html>
+        <html lang="id">
+        <head>
+            <meta charset="UTF-8">
+            <title>Bukti Pendaftaran</title>
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+            <style>
+                body { padding: 20px; font-family: Arial, sans-serif; }
+                .card-header {
+                    background: linear-gradient(135deg,#1a2e42,#2563eb) !important;
+                    color: white !important;
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                    padding: 16px 20px;
+                }
+                .card-header * { color: white !important; }
+                .no-print { display: none !important; }
+                .badge { font-size: .75rem; padding: .3em .6em; }
+                @media print {
+                    body { padding: 0; }
+                    .no-print { display: none !important; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="mb-3 text-center">
+                <h5 style="color:#1a2e42;">BEM Fasilkom Unsika — Bukti Pendaftaran Event</h5>
+                <p style="font-size:.8rem; color:#666;">Dicetak pada: ${new Date().toLocaleString('id-ID')}</p>
+                <hr>
+            </div>
+            ${konten}
+            <script>window.onload = function() { window.print(); }<\/script>
+        </body>
+        </html>
+    `);
+    jendela.document.close();
+}
+</script>
 
 <?php include 'includes/footer.php'; ?>

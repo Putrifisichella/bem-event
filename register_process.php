@@ -235,12 +235,10 @@ try {
     // Commit transaksi
     $conn->commit();
 
-    // Kirim email konfirmasi (kegagalan email tidak membatalkan pendaftaran)
-    sendRegistrationEmail($email, $full_name, $event['name'], $event);
-
+    // Email dihapus — bukti pendaftaran tersedia di riwayat pendaftaran
     respond(
         true,
-        "Pendaftaran berhasil! Email konfirmasi telah dikirim ke <strong>{$email}</strong>.",
+        "Pendaftaran berhasil! Bukti pendaftaran dapat dilihat di halaman <strong>Riwayat Pendaftaran</strong>.",
         $is_ajax
     );
 

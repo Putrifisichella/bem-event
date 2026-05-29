@@ -213,9 +213,6 @@ $csrf_token = generateCsrfToken();
                             <input type="tel" class="form-control" id="phone" name="phone"
                                    placeholder="Contoh: 08123456789"
                                    maxlength="13" pattern="[0-9]{10,13}">
-                            <div class="form-text">Konfirmasi akan dikirim ke
-                                <strong><?= htmlspecialchars($member_email) ?></strong>.
-                            </div>
                         </div>
 
                         <div class="d-flex gap-3">

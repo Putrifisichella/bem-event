@@ -53,8 +53,7 @@ include 'includes/header.php';
                             <input type="email" class="form-control" id="email" name="email"
                                    placeholder="contoh@email.com" required
                                    value="<?php echo htmlspecialchars($_SESSION['old_email'] ?? ''); unset($_SESSION['old_email']); ?>">
-                            <div class="form-text">Email ini digunakan untuk login dan konfirmasi event.</div>
-                        </div>
+                            </div>
 
                         <div class="mb-3">
                             <label for="password" class="form-label fw-semibold">
