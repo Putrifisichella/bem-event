@@ -32,7 +32,7 @@ $csrf = generateCsrfToken();
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div>
             <h2 class="fw-bold text-primary mb-1 fs-4">
-                </i>Manajemen Event
+                Manajemen Event
             </h2>
             <p class="text-muted small mb-0">
                 Kelola semua event pendaftaran BEM Fasilkom Unsika

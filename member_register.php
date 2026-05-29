@@ -92,18 +92,4 @@ include 'includes/header.php';
     </div>
 </div>
 
-<script>
-document.getElementById('togglePwd').addEventListener('click', function () {
-    const pwd  = document.getElementById('password');
-    const icon = document.getElementById('eyeIcon');
-    if (pwd.type === 'password') {
-        pwd.type = 'text';
-        icon.classList.replace('fa-eye', 'fa-eye-slash');
-    } else {
-        pwd.type = 'password';
-        icon.classList.replace('fa-eye-slash', 'fa-eye');
-    }
-});
-</script>
-
 <?php include 'includes/footer.php'; ?>

@@ -35,7 +35,7 @@ $today = date('Y-m-d');
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div>
             <h2 class="fw-bold text-primary mb-1">
-                </i>Dashboard Admin
+                Dashboard Admin
             </h2>
         </div>
         <a href="event_add.php" class="btn btn-primary">
