@@ -1,0 +1,24 @@
+# Dependency Composer — di-generate ulang lewat composer install
+/vendor/
+
+# File upload poster event — tidak perlu ikut di-commit
+/uploads/*
+!/uploads/.gitkeep
+
+# File environment / konfigurasi sensitif (kalau nanti dipisah dari database.php)
+.env
+
+# Log & cache
+*.log
+
+# File sistem operasi
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+
+# Composer
+composer.phar

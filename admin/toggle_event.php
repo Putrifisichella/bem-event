@@ -2,7 +2,6 @@
 // ============================================================
 //  admin/toggle_event.php
 //  Mengubah status aktif/nonaktif sebuah event
-//  Dipanggil via AJAX dari halaman events.php
 // ============================================================
 
 if (session_status() === PHP_SESSION_NONE) {
@@ -41,8 +40,18 @@ function respondToggle(bool $ok, string $msg, bool $is_ajax): void
     exit;
 }
 
-// Ambil dan validasi ID dari URL
-$id = intval($_GET['id'] ?? 0);
+// Hanya terima POST (mencegah pemanggilan via link/gambar tersembunyi)
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    respondToggle(false, 'Metode request tidak valid.', $is_ajax);
+}
+
+// Verifikasi CSRF token
+if (!verifyCsrfToken($_POST['csrf_token'] ?? '')) {
+    respondToggle(false, 'Token keamanan tidak valid. Muat ulang halaman dan coba lagi.', $is_ajax);
+}
+
+// Ambil dan validasi ID dari body POST
+$id = intval($_POST['id'] ?? 0);
 if (!$id) {
     respondToggle(false, 'ID event tidak valid.', $is_ajax);
 }

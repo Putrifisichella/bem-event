@@ -291,13 +291,12 @@ $(document).ready(function () {
         e.preventDefault();
 
         var $btn       = $(this);
-        var href       = $btn.attr('href');
-        // Tentukan apakah event saat ini aktif berdasarkan class tombol
+        var $form      = $btn.closest('form');
         var is_active  = $btn.hasClass('btn-secondary');
         var action_txt = is_active ? 'Nonaktifkan' : 'Aktifkan';
         var desc_txt   = is_active
-                         ? 'Event akan disembunyikan dari halaman publik.'
-                         : 'Event akan tampil dan dapat didaftarkan peserta.';
+                        ? 'Event akan disembunyikan dari halaman publik.'
+                        : 'Event akan tampil dan dapat didaftarkan peserta.';
 
         Swal.fire({
             title            : action_txt + ' Event?',
@@ -313,8 +312,9 @@ $(document).ready(function () {
             if (!result.isConfirmed) return;
 
             $.ajax({
-                url     : href,
-                method  : 'GET',
+                url     : $form.attr('action'),
+                method  : 'POST',
+                data    : $form.serialize(),
                 dataType: 'json',
                 success : function (res) {
                     if (res.success) {

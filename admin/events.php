@@ -203,14 +203,17 @@ $csrf = generateCsrfToken();
 
                                     <!-- Toggle Aktif/Nonaktif (via AJAX) -->
                                     <?php $is_deactivatable = in_array($status, ['aktif', 'penuh', 'belum_buka']); ?>
-                                    <a href="toggle_event.php?id=<?= $event['id'] ?>"
-                                       class="btn btn-sm btn-toggle
-                                              <?= $is_deactivatable ? 'btn-secondary' : 'btn-success' ?>"
-                                       title="<?= $is_deactivatable ? 'Nonaktifkan' : 'Aktifkan' ?>"
-                                       data-bs-toggle="tooltip">
-                                        <i class="fas <?= $is_deactivatable ? 'fa-ban' : 'fa-check' ?>"></i>
-                                        
-                                    </a>
+                                    <form action="toggle_event.php" method="POST" class="d-inline">
+                                        <input type="hidden" name="csrf_token" value="<?= $csrf ?>">
+                                        <input type="hidden" name="id" value="<?= $event['id'] ?>">
+                                        <button type="button"
+                                                class="btn btn-sm btn-toggle
+                                                    <?= $is_deactivatable ? 'btn-secondary' : 'btn-success' ?>"
+                                                title="<?= $is_deactivatable ? 'Nonaktifkan' : 'Aktifkan' ?>"
+                                                data-bs-toggle="tooltip">
+                                            <i class="fas <?= $is_deactivatable ? 'fa-ban' : 'fa-check' ?>"></i>
+                                        </button>
+                                    </form>
 
                                 </div>
                             </td>
