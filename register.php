@@ -147,7 +147,7 @@ $csrf_token = generateCsrfToken();
                     <div class="alert alert-info py-2 d-flex align-items-center gap-2 mb-4">
                         <div class="small">
                             Mendaftar sebagai <strong><?= htmlspecialchars($member_name) ?>.</strong>
-                            Bukan kamu? <a href="member_logout.php" class="fw-semibold">Ganti akun</a>
+                            Bukan kamu? <a href="logout.php" class="fw-semibold">Ganti akun</a>
                         </div>
                     </div>
 

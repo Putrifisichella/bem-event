@@ -38,9 +38,6 @@ $today = date('Y-m-d');
                 Dashboard Admin
             </h2>
         </div>
-        <a href="event_add.php" class="btn btn-primary">
-            <i class="fas fa-plus-circle me-1"></i>Tambah Event Baru
-        </a>
     </div>
 
     <!-- Sapaan admin -->
@@ -111,10 +108,10 @@ $today = date('Y-m-d');
                     Aksi Cepat
                 </div>
                 <div class="card-body d-grid gap-3">
-                    <a href="event_add.php" class="btn btn-primary">
+                    <a href="event_add.php" class="btn btn-outline-primary d-flex justify-content-center align-items-center">
                         Tambah Event Baru
                     </a>
-                    <a href="events.php" class="btn btn-outline-primary">
+                    <a href="events.php" class="btn btn-outline-primary d-flex justify-content-center align-items-center">
                         Kelola Semua Event
                     </a>
                 </div>
