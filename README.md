@@ -2,7 +2,7 @@
 
 Aplikasi web berbasis PHP untuk mengelola pendaftaran event/kegiatan BEM Fasilkom Unsika. Mendukung dua peran pengguna: **Admin** (mengelola event) dan **Member/Peserta** (mendaftar event), dengan sistem login terpadu yang otomatis mendeteksi jenis akun.
 
-## ✨ Fitur Utama
+## Fitur Utama
 
 ### Untuk Peserta (Member)
 - Registrasi & login akun peserta (password di-hash dengan bcrypt)
@@ -32,7 +32,7 @@ Aplikasi web berbasis PHP untuk mengelola pendaftaran event/kegiatan BEM Fasilko
 - Escaping output dengan `htmlspecialchars()` untuk mencegah XSS
 - Rate limiting pendaftaran berbasis IP
 
-## 🛠️ Teknologi
+## Teknologi
 
 | Kategori | Teknologi |
 |---|---|
@@ -41,7 +41,7 @@ Aplikasi web berbasis PHP untuk mengelola pendaftaran event/kegiatan BEM Fasilko
 | Frontend | Bootstrap 5, jQuery, DataTables, SweetAlert2, Font Awesome |
 | Dependency Manager | Composer |
 
-## 📂 Struktur Proyek
+## Struktur Proyek
 
 ```
 ├── admin/                  # Halaman & proses khusus admin
@@ -74,7 +74,7 @@ Aplikasi web berbasis PHP untuk mengelola pendaftaran event/kegiatan BEM Fasilko
 └── README.md
 ```
 
-## ⚙️ Instalasi & Setup
+## Instalasi & Setup
 
 ### Prasyarat
 - PHP ≥ 8.0 dengan ekstensi `mysqli` dan `fileinfo`
@@ -130,13 +130,9 @@ Aplikasi web berbasis PHP untuk mengelola pendaftaran event/kegiatan BEM Fasilko
    echo password_hash('password_anda', PASSWORD_BCRYPT);
    ```
 
-## 🗂️ Alur Penggunaan Singkat
+## Alur Penggunaan Singkat
 
 1. Peserta mendaftar akun di `member_register.php`, lalu login di `login.php`.
 2. Peserta menjelajahi event di `index.php` dan mendaftar melalui `register.php`.
 3. Bukti pendaftaran dapat dilihat/dicetak di `my_registrations.php`.
 4. Admin login dengan username di halaman login yang sama, lalu diarahkan ke `admin/dashboard.php` untuk mengelola event dan melihat data peserta.
-
-## 📄 Lisensi
-
-Proyek ini dibuat untuk keperluan internal BEM Fasilkom Unsika. Sesuaikan lisensi sesuai kebutuhan organisasi Anda.
